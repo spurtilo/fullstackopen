@@ -1,82 +1,15 @@
 import { useState, useEffect } from "react";
 import personService from "./services/persons";
-
-const Header = ({ text }) => {
-  return <h2>{text}</h2>;
-};
-
-const Filter = ({ id, value, eventHandler }) => {
-  return (
-    <>
-      Filter shown with: <input id={id} value={value} onChange={eventHandler} />
-    </>
-  );
-};
-
-const PersonForm = ({
-  id,
-  nameValue,
-  numberValue,
-  nameHandler,
-  numberHandler,
-  submitHandler,
-}) => {
-  return (
-    <form id={id} onSubmit={submitHandler}>
-      <div>
-        Name:{" "}
-        <input id={"nameInput"} value={nameValue} onChange={nameHandler} />
-      </div>
-      <div>
-        Number:{" "}
-        <input
-          id={"numberInput"}
-          value={numberValue}
-          onChange={numberHandler}
-        />
-      </div>
-      <div>
-        <button type="submit">Add</button>
-      </div>
-    </form>
-  );
-};
-
-const DeleteButton = ({ personId, name, deleteHandler }) => {
-  return (
-    <button type="button" onClick={() => deleteHandler(personId, name)}>
-      Delete
-    </button>
-  );
-};
-
-const Person = ({ person, deleteHandler }) => {
-  return (
-    <p>
-      {person.name} {person.number}{" "}
-      <DeleteButton
-        personId={person.id}
-        name={person.name}
-        deleteHandler={deleteHandler}
-      />
-    </p>
-  );
-};
-
-const Persons = ({ persons, deleteHandler }) => {
-  return persons.map((person) => (
-    <Person key={person.name} person={person} deleteHandler={deleteHandler} />
-  ));
-};
+import Header from "./components/Header";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 
 function filterNames(personsArray, searchTerm) {
   const searchResult = personsArray.filter((person) =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
   );
-  if (searchResult.length > 0) {
-    return searchResult;
-  }
-  return personsArray;
+  return searchResult.length > 0 ? searchResult : personsArray;
 }
 
 const App = () => {
@@ -179,16 +112,16 @@ const App = () => {
 
   return (
     <div>
-      <Header text={"Phonebook"} />
+      <Header text="Phonebook" />
       <Filter
-        id={"filterInput"}
+        id="filterInput"
         value={newFilter}
         eventHandler={handleFilterChange}
       />
 
-      <Header text={"Add New Number"} />
+      <Header text="Add New Number" />
       <PersonForm
-        id={"personForm"}
+        id="personForm"
         nameValue={newName}
         numberValue={newNumber}
         nameHandler={handleNameChange}
@@ -196,7 +129,7 @@ const App = () => {
         submitHandler={handleAdding}
       />
 
-      <Header text={"Numbers"} />
+      <Header text="Numbers" />
       <Persons persons={personsToShow} deleteHandler={handleDelete} />
     </div>
   );
