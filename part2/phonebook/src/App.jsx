@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import personService from "./services/persons";
 
 const Header = ({ text }) => {
   return <h2>{text}</h2>;
@@ -41,16 +42,31 @@ const PersonForm = ({
   );
 };
 
-const Persons = ({ persons }) => {
-  return persons.map((person) => <Person key={person.name} person={person} />);
+const DeleteButton = ({ personId, name, deleteHandler }) => {
+  return (
+    <button type="button" onClick={() => deleteHandler(personId, name)}>
+      Delete
+    </button>
+  );
 };
 
-const Person = ({ person }) => {
+const Person = ({ person, deleteHandler }) => {
   return (
     <p>
-      {person.name} {person.number}
+      {person.name} {person.number}{" "}
+      <DeleteButton
+        personId={person.id}
+        name={person.name}
+        deleteHandler={deleteHandler}
+      />
     </p>
   );
+};
+
+const Persons = ({ persons, deleteHandler }) => {
+  return persons.map((person) => (
+    <Person key={person.name} person={person} deleteHandler={deleteHandler} />
+  ));
 };
 
 function filterNames(personsArray, searchTerm) {
@@ -64,31 +80,80 @@ function filterNames(personsArray, searchTerm) {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456" },
-    { name: "Ada Lovelace", number: "39-44-5323523" },
-    { name: "Dan Abramov", number: "12-43-234345" },
-    { name: "Mary Poppendieck", number: "39-23-6423122" },
-  ]);
-
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
   const [showAll, setShowAll] = useState(true);
 
-  const addName = (event) => {
+  useEffect(() => {
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
+
+  const handleAdding = (event) => {
     event.preventDefault();
 
-    if (persons.some((person) => person.name === newName)) {
-      window.alert(`${newName} is already added to phonebook.`);
+    const existingPerson = persons.find((person) => person.name === newName);
+
+    if (existingPerson) {
+      const updateConfirmation = window.confirm(
+        `${newName} is already added to phonebook. Do you want to replace the old number with a new one?`
+      );
+      if (updateConfirmation) {
+        handleUpdate(existingPerson);
+      } else {
+        console.log("Update cancelled.");
+      }
     } else {
       const personObject = {
         name: newName.trim(),
         number: newNumber.trim(),
       };
-      setPersons(persons.concat(personObject));
-      setNewName("");
-      setNewNumber("");
+
+      personService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.error("Error creating a person:", error);
+        });
+    }
+  };
+
+  const handleUpdate = (existingPerson) => {
+    const updatedPerson = { ...existingPerson, number: newNumber.trim() };
+
+    personService
+      .update(existingPerson.id, updatedPerson)
+      .then((returnedPerson) => {
+        setPersons(
+          persons.map((person) =>
+            person.id !== existingPerson.id ? person : returnedPerson
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating a person:", error);
+      });
+  };
+
+  const handleDelete = (personId, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService
+        .remove(personId)
+        .then((deletedObject) => {
+          setPersons(
+            persons.filter((person) => person.id !== deletedObject.id)
+          );
+        })
+        .catch((error) => {
+          console.error("Error deleting a person:", error);
+        });
     }
   };
 
@@ -128,11 +193,11 @@ const App = () => {
         numberValue={newNumber}
         nameHandler={handleNameChange}
         numberHandler={handleNumberChange}
-        submitHandler={addName}
+        submitHandler={handleAdding}
       />
 
       <Header text={"Numbers"} />
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} deleteHandler={handleDelete} />
     </div>
   );
 };
