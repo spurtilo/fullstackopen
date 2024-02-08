@@ -1,0 +1,17 @@
+.notification {
+    font-size: 25px;
+    font-weight: bold;
+    border-color: black;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.success {
+    color: black;
+    background-color: beige;
+}
+.error {
+    color: white;
+    background-color: #FF474C;
+}

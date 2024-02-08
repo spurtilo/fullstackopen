@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 function filterNames(personsArray, searchTerm) {
   const searchResult = personsArray.filter((person) =>
@@ -18,16 +19,35 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
   const [showAll, setShowAll] = useState(true);
+  const [notification, setNotification] = useState({
+    message: null,
+    type: "success",
+  });
 
   useEffect(() => {
-    personService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
-    });
+    personService
+      .getAll()
+      .then((initialPersons) => {
+        setPersons(initialPersons);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        handleNotification(
+          "Failed to fetch data. Please try again later.",
+          "error"
+        );
+      });
   }, []);
+
+  const handleNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification({ message: null, type: null });
+    }, 3000);
+  };
 
   const handleAdding = (event) => {
     event.preventDefault();
-
     const existingPerson = persons.find((person) => person.name === newName);
 
     if (existingPerson) {
@@ -49,12 +69,17 @@ const App = () => {
         .create(personObject)
         .then((returnedPerson) => {
           setPersons(persons.concat(returnedPerson));
-          setNewName("");
-          setNewNumber("");
+          handleNotification(`Added ${newName}`, "success");
         })
         .catch((error) => {
           console.error("Error creating a person:", error);
+          handleNotification(
+            `Failed to add ${newName}. Please try again.`,
+            "error"
+          );
         });
+      setNewName("");
+      setNewNumber("");
     }
   };
 
@@ -69,23 +94,35 @@ const App = () => {
             person.id !== existingPerson.id ? person : returnedPerson
           )
         );
+        handleNotification(`Updated ${returnedPerson.name}`, "success");
       })
       .catch((error) => {
         console.error("Error updating a person:", error);
+        handleNotification(
+          `Information of ${updatedPerson.name} has already been removed from server`,
+          "error"
+        );
       });
+    setNewName("");
+    setNewNumber("");
   };
 
   const handleDelete = (personId, name) => {
     if (window.confirm(`Delete ${name}?`)) {
       personService
         .remove(personId)
-        .then((deletedObject) => {
+        .then((returnedPerson) => {
           setPersons(
-            persons.filter((person) => person.id !== deletedObject.id)
+            persons.filter((person) => person.id !== returnedPerson.id)
           );
+          handleNotification(`Deleted ${returnedPerson.name}`, "success");
         })
         .catch((error) => {
           console.error("Error deleting a person:", error);
+          handleNotification(
+            `Failed to delete ${name}. Please try again.`,
+            "error"
+          );
         });
     }
   };
@@ -113,6 +150,7 @@ const App = () => {
   return (
     <div>
       <Header text="Phonebook" />
+      <Notification message={notification.message} type={notification.type} />
       <Filter
         id="filterInput"
         value={newFilter}
