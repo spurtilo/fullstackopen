@@ -1,24 +1,19 @@
 {
   "persons": [
     {
-      "id": "4206",
-      "name": "snadsa",
-      "number": "444"
+      "id": "acee",
+      "name": "Aku Ankka",
+      "number": "050 444"
     },
     {
-      "id": "a2c3",
-      "name": "dsadsa",
-      "number": "111"
+      "id": "59b1",
+      "name": "Pelle Peloton",
+      "number": "040 555"
     },
     {
-      "id": "f633",
-      "name": "aaa",
-      "number": "555"
-    },
-    {
-      "id": "984d",
-      "name": "Simo Purtilo",
-      "number": "6546546"
+      "id": "cb59",
+      "name": "Hannu Hanhi",
+      "number": "040 777"
     }
   ]
 }

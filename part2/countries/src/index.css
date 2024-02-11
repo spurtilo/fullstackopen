@@ -1,3 +1,7 @@
+body {
+    background-color: #add8e6;
+}
+
 .country-list {
     list-style: square;
     padding-left: 30px;
@@ -15,4 +19,17 @@
     border-width: 2px;
     border-color: grey;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.error {
+    font-size: 25px;
+    font-weight: bold;
+    border-color: black;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #FF474C;
 }
