@@ -107,15 +107,13 @@ const App = () => {
     setNewNumber("");
   };
 
-  const handleDelete = (personId, name) => {
+  const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
       personService
-        .remove(personId)
-        .then((returnedPerson) => {
-          setPersons(
-            persons.filter((person) => person.id !== returnedPerson.id)
-          );
-          handleNotification(`Deleted ${returnedPerson.name}`, "success");
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+          handleNotification(`Deleted ${name}`, "success");
         })
         .catch((error) => {
           console.error("Error deleting a person:", error);
