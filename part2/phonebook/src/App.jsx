@@ -74,7 +74,7 @@ const App = () => {
         .catch((error) => {
           console.error("Error creating a person:", error);
           handleNotification(
-            `Failed to add ${newName}. Please try again.`,
+            `Failed to add a person. ${error.response.data.error}`,
             "error"
           );
         });
@@ -98,10 +98,17 @@ const App = () => {
       })
       .catch((error) => {
         console.error("Error updating a person:", error);
-        handleNotification(
-          `Information of ${updatedPerson.name} has already been removed from server`,
-          "error"
-        );
+        if (error.response.data.error) {
+          handleNotification(
+            `Failed to add a person. ${error.response.data.error}`,
+            "error"
+          );
+        } else {
+          handleNotification(
+            `Information of ${updatedPerson.name} has already been removed from server`,
+            "error"
+          );
+        }
       });
     setNewName("");
     setNewNumber("");
