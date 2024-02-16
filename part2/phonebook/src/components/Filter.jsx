@@ -3,7 +3,8 @@ import React from "react";
 const Filter = ({ id, value, eventHandler }) => {
   return (
     <>
-      Filter shown with: <input id={id} value={value} onChange={eventHandler} />
+      <label htmlFor={id}>Filter shown with: </label>
+      <input id={id} value={value} onChange={eventHandler} />
     </>
   );
 };

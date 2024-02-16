@@ -1,17 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Sans+3&display=swap");
+
+body {
+  margin: 30px;
+  background-color: RGB(38, 38, 38);
+  font-family: "Source Sans 3", sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: RGB(226, 223, 218);
+}
+
+h1,
+h2 {
+  font-size: 35px;
+  font-family: "Playfair Display", serif;
+  color: RGB(226, 223, 218);
+}
+
 .notification {
-    font-size: 25px;
-    font-weight: bold;
-    border-color: black;
-    border-style: solid;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
+  font-size: 25px;
+  font-weight: bold;
+  border-color: black;
+  border-style: solid;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
+
 .success {
-    color: black;
-    background-color: beige;
+  color: black;
+  background-color: RGB(226, 223, 218);
 }
+
 .error {
-    color: white;
-    background-color: #FF474C;
+  color: white;
+  background-color: #ff474c;
+}
+
+#filterInput,
+#personForm input {
+  display: flex;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 5px;
+}
+
+.personListItem {
+  display: flex;
+  margin-bottom: 10px;
+  gap: 15px;
 }

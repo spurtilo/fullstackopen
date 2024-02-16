@@ -43,7 +43,7 @@ const App = () => {
     setNotification({ message, type });
     setTimeout(() => {
       setNotification({ message: null, type: null });
-    }, 3000);
+    }, 5000);
   };
 
   const handleAdding = (event) => {
@@ -73,10 +73,7 @@ const App = () => {
         })
         .catch((error) => {
           console.error("Error creating a person:", error);
-          handleNotification(
-            `Failed to add a person. ${error.response.data.error}`,
-            "error"
-          );
+          handleNotification(error.response.data.error, "error");
         });
       setNewName("");
       setNewNumber("");
@@ -99,10 +96,7 @@ const App = () => {
       .catch((error) => {
         console.error("Error updating a person:", error);
         if (error.response.data.error) {
-          handleNotification(
-            `Failed to add a person. ${error.response.data.error}`,
-            "error"
-          );
+          handleNotification(error.response.data.error, "error");
         } else {
           handleNotification(
             `Information of ${updatedPerson.name} has already been removed from server`,

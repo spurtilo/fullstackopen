@@ -3,14 +3,18 @@ import DeleteButton from "./DeleteButton";
 
 const Person = ({ person, deleteHandler }) => {
   return (
-    <p>
-      {person.name} {person.number}{" "}
-      <DeleteButton
-        personId={person.id}
-        name={person.name}
-        deleteHandler={deleteHandler}
-      />
-    </p>
+    <div className="personListItem">
+      <div>
+        {person.name} {person.number}{" "}
+      </div>
+      <div>
+        <DeleteButton
+          personId={person.id}
+          name={person.name}
+          deleteHandler={deleteHandler}
+        />
+      </div>
+    </div>
   );
 };
 

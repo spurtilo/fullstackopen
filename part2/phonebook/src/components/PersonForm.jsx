@@ -11,10 +11,11 @@ const PersonForm = ({
   return (
     <form id={id} onSubmit={submitHandler}>
       <div>
-        Name: <input id="nameInput" value={nameValue} onChange={nameHandler} />
+        <label htmlFor="nameInput">Name: </label>
+        <input id="nameInput" value={nameValue} onChange={nameHandler} />
       </div>
       <div>
-        Number:{" "}
+        <label htmlFor="numberInput">Number: </label>
         <input id="numberInput" value={numberValue} onChange={numberHandler} />
       </div>
       <div>
