@@ -153,3 +153,5 @@ describe("mostLikes", () => {
     });
   });
 });
+
+module.exports = { listOfBlogs };
