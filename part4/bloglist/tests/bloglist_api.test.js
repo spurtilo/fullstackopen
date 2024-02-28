@@ -148,7 +148,7 @@ describe("when there is initially some notes saved", () => {
         likes: "Fifty six",
       };
 
-      await api
+      const result = await api
         .put(`/api/blogs/${blogToUpdate.id}`)
         .send(updatedFields)
         .expect(400)
@@ -156,6 +156,11 @@ describe("when there is initially some notes saved", () => {
 
       const blogsAtEnd = await helper.blogsInDb();
 
+      assert(
+        result.body.error.includes(
+          "invalid data format or type for value of `likes`"
+        )
+      );
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
     });
 
@@ -207,10 +212,11 @@ describe("when there is initially some notes saved", () => {
     test("fails with statuscode 400 if id is invalid", async () => {
       const invalidId = "48c93a8d94a434";
 
-      await api.delete(`/api/blogs/${invalidId}`).expect(400);
+      const result = await api.delete(`/api/blogs/${invalidId}`).expect(400);
 
       const blogsAtEnd = await helper.blogsInDb();
 
+      assert(result.body.error.includes("malformatted id"));
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
     });
 

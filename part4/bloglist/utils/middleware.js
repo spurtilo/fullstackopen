@@ -8,6 +8,16 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get("authorization");
+  req.token = null;
+
+  if (authorization && authorization.startsWith("Bearer ")) {
+    req.token = authorization.replace("Bearer ", "");
+  }
+  next();
+};
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
@@ -19,9 +29,19 @@ const errorHandler = (error, req, res, next) => {
   // console.log("ERROR MESSAGE: ", error.message);
 
   if (error.name === "CastError") {
-    res.status(400).json({
-      error: "CastError: Invalid data format or type, or malformatted id",
-    });
+    if (error.message.includes("Cast to ObjectId failed")) {
+      res.status(400).json({
+        error: "malformatted id",
+      });
+      return;
+    }
+    if (error.message.includes("Cast to Number failed")) {
+      res.status(400).json({
+        error: "invalid data format or type for value of `likes`",
+      });
+      return;
+    }
+    res.status(400).json({ error: error.message });
     return;
   }
 
@@ -50,11 +70,19 @@ const errorHandler = (error, req, res, next) => {
     return;
   }
 
+  if (error.name === "JsonWebTokenError") {
+    res.status(400).json({
+      error: "token missing or invalid",
+    });
+    return;
+  }
+
   next(error);
 };
 
 module.exports = {
   requestLogger,
+  tokenExtractor,
   errorHandler,
   unknownEndpoint,
 };
