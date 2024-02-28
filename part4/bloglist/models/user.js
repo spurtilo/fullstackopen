@@ -1,26 +1,23 @@
 const mongoose = require("mongoose");
 
-const blogSchema = mongoose.Schema({
-  title: {
+const userSchema = mongoose.Schema({
+  username: {
     type: String,
+    minLength: 3,
     required: true,
+    unique: true,
   },
-  author: String,
-  url: {
-    type: String,
-    required: true,
-  },
-  likes: {
-    type: Number,
-    default: 0,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
+  name: String,
+  passwordHash: String,
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog",
+    },
+  ],
 });
 
-blogSchema.set("toJSON", {
+userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     const updatedObject = { ...returnedObject };
 
@@ -32,4 +29,6 @@ blogSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Blog", blogSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
