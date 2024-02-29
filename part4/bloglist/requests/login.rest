@@ -1,12 +1,12 @@
 POST http://localhost:3003/api/login
 Content-Type: application/json
 
-# {
-#     "username": "spurtilo",
-#     "password": "salainensana"
-# }
-
 {
-    "username": "teppo",
-    "password": "dsadgdfgfd"
+    "username": "root",
+    "password": "analasassalasana"
 }
+
+# {
+#     "username": "teppo",
+#     "password": "dsadgdfgfd"
+# }

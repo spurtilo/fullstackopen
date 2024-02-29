@@ -1,7 +1,6 @@
 const blogsRouter = require("express").Router();
-const jwt = require("jsonwebtoken");
+const middleware = require("../utils/middleware");
 const Blog = require("../models/blog");
-const User = require("../models/user");
 
 blogsRouter.get("/", async (req, res) => {
   const blogs = await Blog.find({}).populate("user", {
@@ -12,18 +11,9 @@ blogsRouter.get("/", async (req, res) => {
   res.json(blogs);
 });
 
-blogsRouter.post("/", async (req, res) => {
-  const { title, author, url, likes } = req.body;
-
-  const decodedToken = jwt.verify(req.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    res.status(401).json({
-      error: "token invalid",
-    });
-  }
-
-  const user = await User.findById(decodedToken.id);
-
+blogsRouter.post("/", middleware.userExtractor, async (req, res) => {
+  const { url, title, author, likes } = req.body;
+  const { user } = req;
   const blog = new Blog({
     url,
     title,
@@ -41,7 +31,6 @@ blogsRouter.post("/", async (req, res) => {
 
 blogsRouter.put("/:id", async (req, res) => {
   const { title, author, url, likes } = req.body;
-
   const updatedBlog = await Blog.findByIdAndUpdate(
     req.params.id,
     {
@@ -63,14 +52,22 @@ blogsRouter.put("/:id", async (req, res) => {
   res.json(updatedBlog);
 });
 
-blogsRouter.delete("/:id", async (req, res) => {
-  const blogToDelete = await Blog.findByIdAndDelete(req.params.id);
+blogsRouter.delete("/:id", middleware.userExtractor, async (req, res) => {
+  const { user } = req;
+  const blog = await Blog.findById(req.params.id);
 
-  if (!blogToDelete) {
+  if (!blog) {
     res.status(404).json({ error: "Blog not found" });
     return;
   }
+  if (user.id !== blog.user.toString()) {
+    res.status(401).json({
+      error: "No permission to delete this blog",
+    });
+    return;
+  }
 
+  await Blog.findByIdAndDelete(blog.id);
   res.status(204).end();
 });
 

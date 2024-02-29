@@ -1,4 +1,6 @@
+const jwt = require("jsonwebtoken");
 const logger = require("./logger");
+const User = require("../models/user");
 
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
@@ -9,12 +11,25 @@ const requestLogger = (request, response, next) => {
 };
 
 const tokenExtractor = (req, res, next) => {
-  const authorization = req.get("authorization");
+  const authorization = req.get("Authorization");
   req.token = null;
 
   if (authorization && authorization.startsWith("Bearer ")) {
     req.token = authorization.replace("Bearer ", "");
   }
+  next();
+};
+
+const userExtractor = async (req, res, next) => {
+  const decodedToken = jwt.verify(req.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    res.status(401).json({
+      error: "Token invalid",
+    });
+    return;
+  }
+
+  req.user = await User.findById(decodedToken.id);
   next();
 };
 
@@ -24,9 +39,6 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (error, req, res, next) => {
   logger.error(error.message);
-
-  // console.log("ERROR NAME: ", error.name);
-  // console.log("ERROR MESSAGE: ", error.message);
 
   if (error.name === "CastError") {
     if (error.message.includes("Cast to ObjectId failed")) {
@@ -58,6 +70,18 @@ const errorHandler = (error, req, res, next) => {
       });
       return;
     }
+    if (error.message.includes("`title` is required")) {
+      res.status(400).json({
+        error: "`title` is required",
+      });
+      return;
+    }
+    if (error.message.includes("`url` is required")) {
+      res.status(400).json({
+        error: "`url` is required",
+      });
+      return;
+    }
     res.status(400).json({ error: error.message });
     return;
   }
@@ -71,8 +95,11 @@ const errorHandler = (error, req, res, next) => {
   }
 
   if (error.name === "JsonWebTokenError") {
+    if (error.message.includes("jwt must be provided")) {
+      res.status(401).json({ error: "token required" });
+    }
     res.status(400).json({
-      error: "token missing or invalid",
+      error: "token invalid",
     });
     return;
   }
@@ -83,6 +110,7 @@ const errorHandler = (error, req, res, next) => {
 module.exports = {
   requestLogger,
   tokenExtractor,
+  userExtractor,
   errorHandler,
   unknownEndpoint,
 };
