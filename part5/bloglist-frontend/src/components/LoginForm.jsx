@@ -6,7 +6,6 @@ const loginForm = ({
   loginHandler,
 }) => (
   <div>
-    <h2>Log in to application</h2>
     <form onSubmit={loginHandler}>
       <div>
         <label htmlFor="Username">Username</label>
@@ -14,15 +13,17 @@ const loginForm = ({
           type="text"
           value={usernameValue}
           name="Username"
+          id="Username"
           onChange={usernameHandler}
         />
       </div>
       <div>
         <label htmlFor="Password">Password</label>
         <input
-          type="text"
+          type="password"
           value={passwordValue}
           name="Password"
+          id="Password"
           onChange={passwordHandler}
         />
       </div>
