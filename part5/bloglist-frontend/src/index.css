@@ -21,11 +21,11 @@ h2 {
   font-size: 30px;
 }
 
-.blogListItem {
+/* .blogListItem {
   display: flex;
   margin-bottom: 10px;
   gap: 15px;
-}
+} */
 
 .notification {
   font-size: 25px;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Heading from "./components/Heading";
 import Notification from "./components/Notification";
@@ -6,6 +6,7 @@ import LoginForm from "./components/LoginForm";
 import Logout from "./components/Logout";
 import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
+import Togglable from "./components/Togglable";
 
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -14,9 +15,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [newTitle, setNewTitle] = useState("");
-  const [newAuthor, setNewAuthor] = useState("");
-  const [newUrl, setNewUrl] = useState("");
   const [blogs, setBlogs] = useState([]);
   const [notification, setNotification] = useState({
     message: null,
@@ -26,8 +24,8 @@ const App = () => {
   useEffect(() => {
     async function fetchBlogs() {
       try {
-        const blogs = await blogService.getAll();
-        setBlogs(blogs);
+        const fetchedBlogs = await blogService.getAll();
+        setBlogs(fetchedBlogs);
       } catch (error) {
         console.error("Error fetching blogs:", error);
         handleNotification(error.response.data.error, "error");
@@ -52,24 +50,15 @@ const App = () => {
     }, 3000);
   };
 
-  const addBlog = async (event) => {
-    event.preventDefault();
-
+  const addBlog = async (blogObject) => {
     try {
-      const newBlog = {
-        title: newTitle,
-        author: newAuthor,
-        url: newUrl,
-      };
-      const returnedBlog = await blogService.create(newBlog);
-      setBlogs(blogs.concat(returnedBlog));
-      setNewTitle("");
-      setNewAuthor("");
-      setNewUrl("");
+      const returnedBlog = await blogService.create(blogObject);
+      setBlogs((blogs) => blogs.concat(returnedBlog));
       handleNotification(
         `A new blog added: ${returnedBlog.title} by ${returnedBlog.author}`,
         "success"
       );
+      blogFormRef.current.toggleVisibility();
     } catch (error) {
       console.error("Error adding a blog:", error);
       handleNotification(error.response.data.error, "error");
@@ -82,16 +71,6 @@ const App = () => {
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
-  };
-
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value);
-  };
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value);
-  };
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value);
   };
 
   const handleLogin = async (event) => {
@@ -119,11 +98,13 @@ const App = () => {
     setUser(null);
   };
 
+  const blogFormRef = useRef(null);
+
   return (
     <div>
       {!user && (
         <div>
-          <Heading text="Log in to application" headingType="h2" />
+          <Heading text="Log into application" headingType="h2" />
           <Notification
             message={notification.message}
             type={notification.type}
@@ -146,18 +127,12 @@ const App = () => {
           />
           {user.name} is logged in...
           <Logout logoutHandler={handleLogout} />
-          <Heading text="Create a New Blog" headingType="h2" />
-          <BlogForm
-            titleValue={newTitle}
-            authorValue={newAuthor}
-            urlValue={newUrl}
-            titleHandler={handleTitleChange}
-            authorHandler={handleAuthorChange}
-            urlHandler={handleUrlChange}
-            submitHandler={addBlog}
-          />
+          <Heading text="Add a New Blog" headingType="h2" />
+          <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
           <br />
-          <BlogList blogs={blogs} />
+          <BlogList blogs={blogs} currentUser={user} />
         </div>
       )}
     </div>

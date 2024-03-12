@@ -1,4 +1,4 @@
-const loginForm = ({
+const LoginForm = ({
   usernameValue,
   passwordValue,
   usernameHandler,
@@ -32,4 +32,4 @@ const loginForm = ({
   </div>
 );
 
-export default loginForm;
+export default LoginForm;

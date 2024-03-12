@@ -1,4 +1,4 @@
-const logout = ({ logoutHandler }) => (
+const Logout = ({ logoutHandler }) => (
   <p>
     <button type="button" onClick={logoutHandler}>
       Logout
@@ -6,4 +6,4 @@ const logout = ({ logoutHandler }) => (
   </p>
 );
 
-export default logout;
+export default Logout;
