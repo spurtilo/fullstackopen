@@ -23,7 +23,7 @@ const App = () => {
     async function fetchBlogs() {
       try {
         const fetchedBlogs = await blogService.getAll();
-        setBlogs(fetchedBlogs);
+        setBlogs(fetchedBlogs.sort((a, b) => b.likes - a.likes));
       } catch (error) {
         console.error("Error fetching blogs:", error);
         handleNotification(error.response.data.error, "error");
@@ -44,7 +44,7 @@ const App = () => {
   const handleNotification = (message, type) => {
     setNotification({ message, type });
     setTimeout(() => {
-      setNotification({ message: null, type: null });
+      setNotification({ message: null, type: "success" });
     }, 3000);
   };
 

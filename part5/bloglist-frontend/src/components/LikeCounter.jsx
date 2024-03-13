@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
   const addLike = () => {
     const blogToUpdate = {
@@ -12,6 +14,11 @@ const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
       {likes} <button onClick={addLike}>Like</button>
     </>
   );
+};
+
+LikeCounter.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLikes: PropTypes.func.isRequired,
 };
 
 export default LikeCounter;

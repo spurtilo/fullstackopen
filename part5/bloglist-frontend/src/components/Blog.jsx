@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import LikeCounter from "./LikeCounter";
 import RemoveBlogButton from "./RemoveBlogButton";
 
@@ -49,6 +50,13 @@ const Blog = ({ blog, currentUser, removeBlog, handleLikes }) => {
       )}
     </div>
   );
+};
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  currentUser: PropTypes.object.isRequired,
+  removeBlog: PropTypes.func.isRequired,
+  handleLikes: PropTypes.func.isRequired,
 };
 
 export default Blog;
