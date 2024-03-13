@@ -9,6 +9,13 @@ body {
   color: RGB(226, 223, 218);
 }
 
+a {
+  color: RGB(226, 223, 218);
+}
+a:hover {
+  color: white;
+}
+
 h1,
 h2 {
   font-family: "Playfair Display", serif;
@@ -20,12 +27,6 @@ h1 {
 h2 {
   font-size: 30px;
 }
-
-/* .blogListItem {
-  display: flex;
-  margin-bottom: 10px;
-  gap: 15px;
-} */
 
 .notification {
   font-size: 25px;

@@ -12,8 +12,6 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [notification, setNotification] = useState({
@@ -54,6 +52,7 @@ const App = () => {
     try {
       const returnedBlog = await blogService.create(blogObject);
       setBlogs((blogs) => blogs.concat(returnedBlog));
+
       handleNotification(
         `A new blog added: ${returnedBlog.title} by ${returnedBlog.author}`,
         "success"
@@ -65,17 +64,33 @@ const App = () => {
     }
   };
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+  const deleteBlog = async (blogId) => {
+    try {
+      await blogService.remove(blogId);
+      setBlogs((blogs) => blogs.filter((blog) => blog.id !== blogId));
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      handleNotification(error.response.data.error, "error");
+    }
   };
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+  const updateLikes = async (id, blogObject) => {
+    try {
+      await blogService.update(id, blogObject);
+
+      setBlogs((prevBlogs) =>
+        prevBlogs.map((blog) =>
+          blog.id === id ? { ...blog, likes: blogObject.likes } : blog
+        )
+      );
+      setBlogs((prevBlogs) => [...prevBlogs].sort((a, b) => b.likes - a.likes));
+    } catch (error) {
+      console.error("Error updating likes:", error);
+      handleNotification(error.response.data.error, "error");
+    }
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
+  const handleLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({
         username,
@@ -85,8 +100,6 @@ const App = () => {
       window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      setUsername("");
-      setPassword("");
     } catch (error) {
       console.error("Login error:", error);
       handleNotification(error.response.data.error, "error");
@@ -109,13 +122,7 @@ const App = () => {
             message={notification.message}
             type={notification.type}
           />
-          <LoginForm
-            usernameValue={username}
-            passwordValue={password}
-            usernameHandler={handleUsernameChange}
-            passwordHandler={handlePasswordChange}
-            loginHandler={handleLogin}
-          />
+          <LoginForm authenticateUser={handleLogin} />
         </div>
       )}
       {user && (
@@ -132,7 +139,12 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           <br />
-          <BlogList blogs={blogs} currentUser={user} />
+          <BlogList
+            blogs={blogs}
+            currentUser={user}
+            removeBlog={deleteBlog}
+            handleLikes={updateLikes}
+          />
         </div>
       )}
     </div>

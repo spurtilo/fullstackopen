@@ -1,27 +1,15 @@
-import { useState } from "react";
-import blogService from "../services/blogs";
-
-const LikeCounter = ({ id, user, likes, ...props }) => {
-  const [updatedLikes, setUpdatedLikes] = useState(likes);
-
-  const addLike = async () => {
-    setUpdatedLikes((prevCount) => prevCount + 1);
+const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
+  const addLike = () => {
     const blogToUpdate = {
       user: user.id,
-      likes: updatedLikes + 1,
+      likes: likes + 1,
       ...props,
     };
-    try {
-      await blogService.update(id, blogToUpdate);
-    } catch (error) {
-      console.error("Error updating likes:", error);
-      setUpdatedLikes((prevCount) => prevCount - 1);
-    }
+    handleLikes(id, blogToUpdate);
   };
-
   return (
     <>
-      {updatedLikes} <button onClick={addLike}>Like</button>
+      {likes} <button onClick={addLike}>Like</button>
     </>
   );
 };

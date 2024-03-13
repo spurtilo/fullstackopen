@@ -2,7 +2,7 @@ import { useState } from "react";
 import LikeCounter from "./LikeCounter";
 import RemoveBlogButton from "./RemoveBlogButton";
 
-const Blog = ({ blog, currentUser, removeBlog }) => {
+const Blog = ({ blog, currentUser, removeBlog, handleLikes }) => {
   const blogStyle = {
     display: "flex",
     flexDirection: "column",
@@ -29,15 +29,22 @@ const Blog = ({ blog, currentUser, removeBlog }) => {
         {" - "}
         {blog.author} <button onClick={toggleExpanded}>{buttonLabel}</button>
       </div>
-      <div style={showWhenExpanded}>URL: {blog.url}</div>
       <div style={showWhenExpanded}>
-        Likes: <LikeCounter {...blog} />
+        URL: <a href={blog.url}>{blog.url}</a>
+      </div>
+      <div style={showWhenExpanded}>
+        Likes: <LikeCounter blog={blog} handleLikes={handleLikes} />
       </div>
       <div style={showWhenExpanded}>User: {blog.user.name}</div>
 
       {currentUser.username === blog.user.username && (
         <div style={showWhenExpanded}>
-          <RemoveBlogButton blogId={blog.id} removeBlog={removeBlog} />
+          <RemoveBlogButton
+            blogId={blog.id}
+            title={blog.title}
+            author={blog.author}
+            removeBlog={removeBlog}
+          />
         </div>
       )}
     </div>
