@@ -30,6 +30,7 @@ const Blog = ({ blog, currentUser, removeBlog, handleLikes }) => {
         {" - "}
         {blog.author} <button onClick={toggleExpanded}>{buttonLabel}</button>
       </div>
+
       <div style={showWhenExpanded}>
         URL: <a href={blog.url}>{blog.url}</a>
       </div>
@@ -37,7 +38,6 @@ const Blog = ({ blog, currentUser, removeBlog, handleLikes }) => {
         Likes: <LikeCounter blog={blog} handleLikes={handleLikes} />
       </div>
       <div style={showWhenExpanded}>User: {blog.user.name}</div>
-
       {currentUser.username === blog.user.username && (
         <div style={showWhenExpanded}>
           <RemoveBlogButton
