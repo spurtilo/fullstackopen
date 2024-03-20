@@ -7,10 +7,10 @@ describe("<BlogForm />", () => {
     const createBlog = vi.fn();
     const { container } = render(<BlogForm createBlog={createBlog} />);
 
-    const titleInput = container.querySelector("#titleInput");
-    const authorInput = container.querySelector("#authorInput");
-    const urlInput = container.querySelector("#urlInput");
-    const submitButton = container.querySelector("#blogSubmitButton");
+    const titleInput = container.querySelector("input[name='Title']");
+    const authorInput = container.querySelector("input[name='Author']");
+    const urlInput = container.querySelector("input[name='URL']");
+    const submitButton = screen.getByRole("button", { name: "Submit" });
 
     const user = userEvent.setup();
     await user.type(titleInput, "Test title");

@@ -132,7 +132,7 @@ const App = () => {
             message={notification.message}
             type={notification.type}
           />
-          {user.name} is logged in...
+          <p>{user.name} is logged in...</p>
           <Logout logoutHandler={handleLogout} />
           <Heading text="Add a New Blog" headingType="h2" />
           <Togglable buttonLabel="New Blog" ref={blogFormRef}>

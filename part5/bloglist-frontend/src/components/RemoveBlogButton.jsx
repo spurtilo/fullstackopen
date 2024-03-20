@@ -5,7 +5,11 @@ const RemoveBlogButton = ({ blogId, title, author, removeBlog }) => {
     if (!window.confirm(`Remove blog ${title} by ${author}`)) return;
     removeBlog(blogId);
   };
-  return <button onClick={deleteBlog}>Remove</button>;
+  return (
+    <button data-testid="removeButton" onClick={deleteBlog}>
+      Remove
+    </button>
+  );
 };
 
 RemoveBlogButton.propTypes = {

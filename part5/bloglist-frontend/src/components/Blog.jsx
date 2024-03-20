@@ -24,11 +24,14 @@ const Blog = ({ blog, currentUser, removeBlog, handleLikes }) => {
   };
 
   return (
-    <div style={blogStyle}>
-      <div>
+    <div style={blogStyle} data-testid={blog.title}>
+      <div data-testid="blogItemTitle">
         {blog.title}
         {" - "}
-        {blog.author} <button onClick={toggleExpanded}>{buttonLabel}</button>
+        {blog.author}{" "}
+        <button data-testid="viewHideButton" onClick={toggleExpanded}>
+          {buttonLabel}
+        </button>
       </div>
 
       <div style={showWhenExpanded}>

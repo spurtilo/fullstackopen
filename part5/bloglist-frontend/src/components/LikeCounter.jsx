@@ -11,7 +11,10 @@ const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
   };
   return (
     <>
-      {likes} <button onClick={addLike}>Like</button>
+      <span data-testid="likeCount">{likes}</span>{" "}
+      <button data-testid="likeButton" onClick={addLike}>
+        Like
+      </button>
     </>
   );
 };
