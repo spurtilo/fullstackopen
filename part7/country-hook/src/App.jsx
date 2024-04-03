@@ -25,7 +25,7 @@ const useCountry = (name) => {
       );
       setCountry(response);
     } catch (error) {
-      console.error("Error fetching a country: ", error);
+      console.error("Error fetching country data: ", error);
       setCountry({
         error: "Error fetching country data",
         code: error.response ? error.response.status : "UNKNOWN ERROR",
