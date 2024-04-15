@@ -1,18 +1,21 @@
 import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
+import { updateLikes } from "../reducers/blogReducer";
 
-const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
+const LikeCounter = ({ blogId }) => {
+  const blogToLike = useSelector((state) =>
+    state.blogs.find((b) => b.id === blogId)
+  );
+  const dispatch = useDispatch();
+
   const addLike = () => {
-    const blogToUpdate = {
-      user: user.id,
-      likes: likes + 1,
-      ...props,
-    };
-    handleLikes(id, blogToUpdate);
+    dispatch(updateLikes(blogToLike.id));
   };
+
   return (
     <>
-      <span data-testid="likeCount">{likes}</span>{" "}
-      <button data-testid="likeButton" onClick={addLike}>
+      <span data-testid="likeCount">{blogToLike.likes}</span>{" "}
+      <button type="button" data-testid="likeButton" onClick={addLike}>
         Like
       </button>
     </>
@@ -20,8 +23,7 @@ const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
 };
 
 LikeCounter.propTypes = {
-  blog: PropTypes.object.isRequired,
-  handleLikes: PropTypes.func.isRequired,
+  blogId: PropTypes.string.isRequired,
 };
 
 export default LikeCounter;

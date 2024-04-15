@@ -1,12 +1,22 @@
+import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
-const RemoveBlogButton = ({ blogId, title, author, removeBlog }) => {
-  const deleteBlog = () => {
-    if (!window.confirm(`Remove blog ${title} by ${author}`)) return;
-    removeBlog(blogId);
-  };
+import { deleteBlog } from "../reducers/blogReducer";
+
+const RemoveBlogButton = ({ blogId }) => {
+  const blogToRemove = useSelector((state) =>
+    state.blogs.find((b) => b.id === blogId)
+  );
+  const dispatch = useDispatch();
+
   return (
-    <button data-testid="removeButton" onClick={deleteBlog}>
+    <button
+      type="button"
+      data-testid="removeButton"
+      onClick={() => {
+        dispatch(deleteBlog(blogToRemove.id));
+      }}
+    >
       Remove
     </button>
   );
@@ -14,9 +24,6 @@ const RemoveBlogButton = ({ blogId, title, author, removeBlog }) => {
 
 RemoveBlogButton.propTypes = {
   blogId: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  author: PropTypes.string.isRequired,
-  removeBlog: PropTypes.func.isRequired,
 };
 
 export default RemoveBlogButton;

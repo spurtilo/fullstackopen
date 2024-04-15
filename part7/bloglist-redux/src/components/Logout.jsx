@@ -1,15 +1,19 @@
-import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { handleLogout } from "../reducers/userReducer";
 
-const Logout = ({ logoutHandler }) => (
-  <div>
-    <button data-testid="logoutButton" type="button" onClick={logoutHandler}>
-      Logout
-    </button>
-  </div>
-);
-
-Logout.propTypes = {
-  logoutHandler: PropTypes.func.isRequired,
+const Logout = () => {
+  const dispatch = useDispatch();
+  return (
+    <div>
+      <button
+        type="button"
+        data-testid="logoutButton"
+        onClick={() => dispatch(handleLogout())}
+      >
+        Logout
+      </button>
+    </div>
+  );
 };
 
 export default Logout;
