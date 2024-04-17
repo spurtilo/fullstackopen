@@ -49,6 +49,7 @@ export const handleLogin = (username, password) => {
 export const handleLogout = () => {
   return (dispatch) => {
     window.localStorage.removeItem("loggedBloglistUser");
+    blogService.setToken(null);
     dispatch(logoutUser());
   };
 };

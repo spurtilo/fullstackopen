@@ -1,15 +1,14 @@
-import PropTypes from "prop-types";
+import { useLogout } from "../contexts/AuthContext";
 
-const Logout = ({ logoutHandler }) => (
-  <div>
-    <button data-testid="logoutButton" type="button" onClick={logoutHandler}>
-      Logout
-    </button>
-  </div>
-);
-
-Logout.propTypes = {
-  logoutHandler: PropTypes.func.isRequired,
+const Logout = () => {
+  const logout = useLogout();
+  return (
+    <div>
+      <button type="button" data-testid="logoutButton" onClick={() => logout()}>
+        Logout
+      </button>
+    </div>
+  );
 };
 
 export default Logout;

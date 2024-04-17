@@ -1,18 +1,47 @@
 import PropTypes from "prop-types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
-  const addLike = () => {
-    const blogToUpdate = {
-      user: user.id,
+import blogService from "../services/blogs";
+
+import { useNotificationDispatch } from "../contexts/NotificationContext";
+
+const LikeCounter = ({ blogToLike }) => {
+  const queryClient = useQueryClient();
+  const notificationDispatch = useNotificationDispatch();
+
+  const likeMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(["blogs"]);
+      queryClient.setQueryData(
+        ["blogs"],
+        blogs.map((blog) => (blog.id !== updatedBlog.id ? blog : updatedBlog))
+      );
+    },
+    onError: (error) => {
+      notificationDispatch(
+        error.response?.data?.error || `Error updating likes: ${error.message}`,
+        "error"
+      );
+    },
+  });
+
+  const handleLikes = ({ id, likes, ...props }) => {
+    const newObject = {
       likes: likes + 1,
       ...props,
     };
-    handleLikes(id, blogToUpdate);
+    likeMutation.mutate({ id, newObject });
   };
+
   return (
     <>
-      <span data-testid="likeCount">{likes}</span>{" "}
-      <button data-testid="likeButton" onClick={addLike}>
+      <span data-testid="likeCount">{blogToLike.likes}</span>{" "}
+      <button
+        type="button"
+        data-testid="likeButton"
+        onClick={() => handleLikes(blogToLike)}
+      >
         Like
       </button>
     </>
@@ -20,8 +49,18 @@ const LikeCounter = ({ blog: { id, user, likes, ...props }, handleLikes }) => {
 };
 
 LikeCounter.propTypes = {
-  blog: PropTypes.object.isRequired,
-  handleLikes: PropTypes.func.isRequired,
+  blogToLike: PropTypes.shape({
+    url: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    user: PropTypes.shape({
+      username: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+    likes: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default LikeCounter;

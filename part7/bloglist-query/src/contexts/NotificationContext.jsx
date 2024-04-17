@@ -36,14 +36,23 @@ export const NotificationContextProvider = ({ children }) => {
   );
 };
 
-export const useNotificationValue = () => {
+export const useNotificationState = () => {
   const notificationAndDispatch = useContext(NotificationContext);
   return notificationAndDispatch[0];
 };
 
 export const useNotificationDispatch = () => {
   const notificationAndDispatch = useContext(NotificationContext);
-  return notificationAndDispatch[1];
+  const dispatch = notificationAndDispatch[1];
+  return (message, msgType) => {
+    dispatch({
+      type: "notification/showNotification",
+      payload: { message, msgType },
+    });
+    setTimeout(() => {
+      dispatch({ type: "notification/hideNotification" });
+    }, 5000);
+  };
 };
 
 export default NotificationContext;

@@ -1,7 +1,7 @@
-import { useNotificationValue } from "../contexts/NotificationContext";
+import { useNotificationState } from "../contexts/NotificationContext";
 
 const Notification = () => {
-  const notification = useNotificationValue();
+  const notification = useNotificationState();
   if (!notification || notification.message === null) return null;
   return (
     <div

@@ -1,17 +1,14 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
+import { useLogin } from "../contexts/AuthContext";
 
-const LoginForm = ({ authenticateUser }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const login = useLogin();
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    authenticateUser({
-      username,
-      password,
-    });
-
+    await login(username, password);
     setUsername("");
     setPassword("");
   };
@@ -20,33 +17,33 @@ const LoginForm = ({ authenticateUser }) => {
     <div>
       <form onSubmit={handleLogin}>
         <div>
-          <label htmlFor="Username">Username</label>
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            id="Username"
-            onChange={(event) => setUsername(event.target.value)}
-          />
+          <label htmlFor="Username">
+            Username
+            <input
+              type="text"
+              value={username}
+              name="Username"
+              id="Username"
+              onChange={(event) => setUsername(event.target.value)}
+            />
+          </label>
         </div>
         <div>
-          <label htmlFor="Password">Password</label>
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            id="Password"
-            onChange={(event) => setPassword(event.target.value)}
-          />
+          <label htmlFor="Password">
+            Password
+            <input
+              type="password"
+              value={password}
+              name="Password"
+              id="Password"
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </label>
         </div>
         <button type="submit">Login</button>
       </form>
     </div>
   );
-};
-
-LoginForm.propTypes = {
-  authenticateUser: PropTypes.func.isRequired,
 };
 
 export default LoginForm;

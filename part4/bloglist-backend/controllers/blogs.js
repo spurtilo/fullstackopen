@@ -31,13 +31,14 @@ blogsRouter.post("/", middleware.userExtractor, async (req, res) => {
 });
 
 blogsRouter.put("/:id", async (req, res) => {
-  const { title, author, url, likes } = req.body;
+  const { title, author, url, user, likes } = req.body;
   const updatedBlog = await Blog.findByIdAndUpdate(
     req.params.id,
     {
       title,
       author,
       url,
+      user: user.id,
       likes,
     },
     {
@@ -45,6 +46,7 @@ blogsRouter.put("/:id", async (req, res) => {
       runValidators: true,
     }
   );
+  await updatedBlog.populate("user", { username: 1, name: 1, id: 1 });
 
   if (!updatedBlog) {
     res.status(404).json({ error: "Blog not found" });
