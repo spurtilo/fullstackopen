@@ -1,49 +1,82 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Sans+3&display=swap");
 
+html {
+  font-size: 16px;
+}
+
 body {
-  margin: 30px;
-  background-color: RGB(38, 38, 38);
+  display: flex;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100%;
+  justify-content: center;
+  background-color: #333333;
+  background-image: url("/patterns/pattern.svg");
+  background-size: auto;
+  background-repeat: repeat;
   font-family: "Source Sans 3", sans-serif;
   font-weight: 500;
-  font-size: 18px;
-  color: RGB(226, 223, 218);
+  font-size: 1rem;
+  color: #ffffff;
 }
 
 a {
-  color: RGB(226, 223, 218);
+  color: #ffffff;
 }
 a:hover {
-  color: white;
+  color: #ababab;
 }
 
 h1,
 h2 {
   font-family: "Playfair Display", serif;
-  color: RGB(226, 223, 218);
+  color: #ffffff;
 }
 h1 {
-  font-size: 50px;
+  font-size: 2.5rem;
 }
 h2 {
-  font-size: 30px;
+  font-size: 1.5rem;
+}
+
+button {
+  font-family: "Source Sans 3", sans-serif;
+  font-weight: 500;
 }
 
 .notification {
-  font-size: 25px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 1.8rem;
   font-weight: bold;
-  border-color: black;
-  border-style: solid;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
+  border: solid 0.36rem #333333;
+  border-radius: 0.3rem;
+  padding: 0.6rem;
+  width: 100%;
+  margin-bottom: 0.6rem;
+  margin-top: 0.6rem;
 }
 
 .success {
-  color: black;
-  background-color: rgb(226, 223, 218);
+  color: #333333;
+  background-color: #ffffff;
 }
 
 .error {
   color: white;
   background-color: rgb(255, 71, 76);
+}
+
+@media screen and (max-width: 796px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
 }

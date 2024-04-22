@@ -2,12 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import loginService from "../services/login";
 import blogService from "../services/blogs";
+import userService from "../services/users";
 
 import { setNotification } from "./notificationReducer";
 
 const initialState = {
   isAuthenticated: !!localStorage.getItem("loggedBloglistUser"),
   userDetails: JSON.parse(localStorage.getItem("loggedBloglistUser")) || null,
+  allUsers: [],
 };
 
 const userSlice = createSlice({
@@ -15,15 +17,25 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginUser(state, action) {
-      return { isAuthenticated: true, userDetails: action.payload };
+      return { ...state, isAuthenticated: true, userDetails: action.payload };
     },
     logoutUser(state, action) {
-      return { isAuthenticated: false, userDetails: null };
+      return { ...state, isAuthenticated: false, userDetails: null };
+    },
+    setUsers(state, action) {
+      return { ...state, allUsers: action.payload };
     },
   },
 });
 
-export const { loginUser, logoutUser } = userSlice.actions;
+export const { loginUser, logoutUser, setUsers } = userSlice.actions;
+
+export const getUsers = () => {
+  return async (dispatch) => {
+    const users = await userService.getAll();
+    dispatch(setUsers(users));
+  };
+};
 
 export const handleLogin = (username, password) => {
   return async (dispatch) => {

@@ -1,17 +1,28 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Routes, Route } from "react-router-dom";
+import styled from "styled-components";
 
-import Heading from "./components/Heading";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
-import Logout from "./components/Logout";
-import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
-import Togglable from "./components/Togglable";
+import Users from "./components/Users";
+import NavBar from "./components/NavBar";
+import UserInfo from "./components/UserInfo";
+import BlogInfo from "./components/BlogInfo";
 
 import blogService from "./services/blogs";
-
 import { initializeBlogs } from "./reducers/blogReducer";
+
+const AppContainer = styled.div`
+  overflow-x: hidden;
+  display: flex;
+  min-height: 100%;
+  margin: 0 1rem;
+  padding: 0 3rem;
+  background-color: #404040;
+  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+`;
 
 const App = () => {
   const { userDetails, isAuthenticated } = useSelector((state) => state.user);
@@ -26,34 +37,26 @@ const App = () => {
       blogService.setToken(userDetails.token);
   }, [isAuthenticated, userDetails]);
 
-  const blogFormRef = useRef(null);
-
   return (
-    <div>
-      {!isAuthenticated && (
+    <AppContainer>
+      {isAuthenticated ? (
         <div>
-          <Heading text="Log into application" headingType="h2" />
+          <NavBar />
+          <Notification />
+          <Routes>
+            <Route path="/" element={<BlogList />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="users/:id" element={<UserInfo />} />
+            <Route path="blogs/:id" element={<BlogInfo />} />
+          </Routes>
+        </div>
+      ) : (
+        <div>
           <Notification />
           <LoginForm />
         </div>
       )}
-      {isAuthenticated && (
-        <div>
-          <Heading text="The Bloglist" headingType="h1" />
-          <Notification />
-          <p>{userDetails.name} is logged in...</p>
-          <Logout />
-          <Heading text="Add a New Blog" headingType="h2" />
-          <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-            <BlogForm
-              toggleVisibility={() => blogFormRef.current.toggleVisibility()}
-            />
-          </Togglable>
-          <br />
-          <BlogList />
-        </div>
-      )}
-    </div>
+    </AppContainer>
   );
 };
 

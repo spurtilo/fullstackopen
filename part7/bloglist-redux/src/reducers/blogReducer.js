@@ -13,6 +13,11 @@ const blogSlice = createSlice({
     appendBlog(state, action) {
       state.push(action.payload);
     },
+    appendComment(state, action) {
+      const comment = action.payload;
+      const blogToComment = state.find((blog) => blog.id === comment.blogId);
+      blogToComment.comments = blogToComment.comments.concat(comment);
+    },
     placeLike(state, action) {
       const { id } = action.payload;
       const updatedBlogs = state.map((blog) =>
@@ -27,7 +32,7 @@ const blogSlice = createSlice({
   },
 });
 
-export const { setBlogs, appendBlog, placeLike, removeBlog } =
+export const { setBlogs, appendBlog, appendComment, placeLike, removeBlog } =
   blogSlice.actions;
 
 export const initializeBlogs = () => {
@@ -59,6 +64,24 @@ export const createBlog = (blogObject) => {
         setNotification(
           error.response?.data?.error ||
             `Error adding a blog: ${error.message}`,
+          "error"
+        )
+      );
+    }
+  };
+};
+
+export const commentBlog = (blogId, commentObject) => {
+  return async (dispatch) => {
+    try {
+      const newComment = await blogService.createComment(blogId, commentObject);
+      dispatch(appendComment(newComment));
+    } catch (error) {
+      console.error("Error commenting a blog:", error);
+      dispatch(
+        setNotification(
+          error.response?.data?.error ||
+            `Error commenting a blog: ${error.message}`,
           "error"
         )
       );
