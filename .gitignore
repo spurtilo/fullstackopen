@@ -1,6 +1,7 @@
+.env
 node_modules
 code-along
 query-notes
 hook-counter
 webpack-osa7
-.env
+graphql-phonebook-backend
