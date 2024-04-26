@@ -189,17 +189,19 @@ const resolvers = {
           name: args.author,
           born: null,
           bookCount: 1,
+          id: uuid(),
         };
         authors = authors.concat(newAuthor);
         authorBookCounts[args.author] = 1;
       } else {
         authorBookCounts[args.author]++;
       }
-      const book = { ...args, id: uuid() };
-      books = books.concat(book);
-      return book;
+      const newBook = { ...args, id: uuid() };
+      books = books.concat(newBook);
+      return newBook;
     },
     editAuthor: (root, args) => {
+      console.log("ARGS: ", args);
       const author = authors.find((author) => author.name === args.name);
       if (!author) {
         return null;
