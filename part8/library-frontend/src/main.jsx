@@ -8,14 +8,15 @@ import App from "./App";
 const client = new ApolloClient({
   uri: "http://localhost:4000",
   cache: new InMemoryCache(),
+  // connectToDevTools: true,
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <ApolloProvider client={client}>
+  <React.StrictMode>
     <Router>
-      <React.StrictMode>
+      <ApolloProvider client={client}>
         <App />
-      </React.StrictMode>
+      </ApolloProvider>
     </Router>
-  </ApolloProvider>
+  </React.StrictMode>
 );

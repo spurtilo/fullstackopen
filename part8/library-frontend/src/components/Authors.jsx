@@ -50,25 +50,31 @@ const Authors = ({ authors }) => {
         <h2>Set Birthyear</h2>
         <form onSubmit={submit}>
           <div>
-            Author
-            <select
-              value={name}
-              onChange={({ target }) => setName(target.value)}
-            >
-              {authors.map((a) => (
-                <option key={a.name} value={a.name}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="authorSelect">
+              Author
+              <select
+                id="authorSelect"
+                value={name}
+                onChange={({ target }) => setName(target.value)}
+              >
+                {authors.map((a) => (
+                  <option key={a.id} value={a.name}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div>
-            Born
-            <input
-              type="number"
-              value={birth}
-              onChange={({ target }) => setBirth(Number(target.value))}
-            />
+            <label htmlFor="yearInput">
+              Born
+              <input
+                id="yearInput"
+                type="number"
+                value={birth}
+                onChange={({ target }) => setBirth(Number(target.value))}
+              />
+            </label>
           </div>
           <button type="submit">Update author</button>
         </form>
