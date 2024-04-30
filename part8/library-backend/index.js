@@ -163,10 +163,24 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
+    bookCount: async () => Book.collection.countDocuments(),
+    authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      return Book.find({}).populate('author');
+      let query = Book.find();
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author });
+        if (!author) {
+          throw new GraphQLError('Author not found', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+            },
+          });
+        }
+        query = query.where({ author: author._id });
+      }
+      const books = await query.populate('author');
+      return books;
 
       // let filteredBooks = [...books];
       // if (args.author) {
