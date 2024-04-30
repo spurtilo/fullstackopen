@@ -1,10 +1,10 @@
-import { Routes, Route, Link } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { ALL_AUTHORS } from "./queries";
+import { Routes, Route, Link } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
+import { ALL_AUTHORS } from './queries';
 
-import Authors from "./components/Authors";
-import Books from "./components/Books";
-import NewBook from "./components/NewBook";
+import Authors from './components/Authors';
+import Books from './components/Books';
+import NewBook from './components/NewBook';
 
 const App = () => {
   const result = useQuery(ALL_AUTHORS);

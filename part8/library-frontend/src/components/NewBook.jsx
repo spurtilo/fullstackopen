@@ -1,21 +1,21 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@apollo/client";
-import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from "../queries";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries';
 
 const NewBook = () => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [published, setPublished] = useState("");
-  const [genre, setGenre] = useState("");
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [published, setPublished] = useState('');
+  const [genre, setGenre] = useState('');
   const [genres, setGenres] = useState([]);
   const navigate = useNavigate();
 
   const [createBook] = useMutation(CREATE_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
     onError: (error) => {
-      const messages = error.graphQLErrors.map((e) => e.message).join("\n");
-      console.log("ERROR:", messages);
+      const messages = error.graphQLErrors.map((e) => e.message).join('\n');
+      console.log('ERROR:', messages);
     },
   });
 
@@ -23,18 +23,18 @@ const NewBook = () => {
     event.preventDefault();
 
     createBook({ variables: { title, author, published, genres } });
-    navigate("/books", { replace: true });
+    navigate('/books', { replace: true });
 
-    setTitle("");
-    setPublished("");
-    setAuthor("");
+    setTitle('');
+    setPublished('');
+    setAuthor('');
     setGenres([]);
-    setGenre("");
+    setGenre('');
   };
 
   const addGenre = () => {
     setGenres(genres.concat(genre));
-    setGenre("");
+    setGenre('');
   };
 
   return (
@@ -71,7 +71,7 @@ const NewBook = () => {
             add genre
           </button>
         </div>
-        <div>genres: {genres.join(" ")}</div>
+        <div>genres: {genres.join(' ')}</div>
         <button type="submit">create book</button>
       </form>
     </div>
