@@ -10,6 +10,15 @@ const Books = () => {
     return <div>loading...</div>;
   }
 
+  if (result.data.allBooks.length === 0) {
+    return (
+      <div>
+        <h2>Books</h2>
+        No books to display
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2>Books</h2>

@@ -1,18 +1,18 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/self-closing-comp */
-import { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { EDIT_AUTHOR, ALL_AUTHORS } from "../queries";
+import { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { EDIT_AUTHOR, ALL_AUTHORS } from '../queries';
 
 const Authors = ({ authors }) => {
-  const [name, setName] = useState(authors[0].name);
-  const [birth, setBirth] = useState("");
+  const [name, setName] = useState(authors.length > 0 ? authors[0].name : '');
+  const [birth, setBirth] = useState('');
 
   const [updateBirthYear] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
-      const messages = error.graphQLErrors.map((e) => e.message).join("\n");
-      console.log("ERROR:", messages);
+      const messages = error.graphQLErrors.map((e) => e.message).join('\n');
+      console.log('ERROR:', messages);
     },
   });
 
@@ -22,8 +22,17 @@ const Authors = ({ authors }) => {
     updateBirthYear({ variables: { name, setBornTo: birth } });
 
     setName(authors[0].name);
-    setBirth("");
+    setBirth('');
   };
+
+  if (authors.length === 0) {
+    return (
+      <div>
+        <h2>Authors</h2>
+        No authors to display
+      </div>
+    );
+  }
 
   return (
     <div>
