@@ -4,14 +4,14 @@ import { useQuery } from '@apollo/client';
 import { ALL_BOOKS, CURRENT_USER } from '../queries';
 
 const Recommendations = () => {
-  const { data: userData } = useQuery(CURRENT_USER);
+  const { loading: userLoading, data: userData } = useQuery(CURRENT_USER);
   const { loading: booksLoading, data: booksData } = useQuery(ALL_BOOKS);
 
-  if (booksLoading) {
+  if (booksLoading || userLoading) {
     return <div>loading...</div>;
   }
 
-  if (booksData.allBooks.length === 0) {
+  if (!userData.me || booksData.allBooks.length === 0) {
     return (
       <div>
         <h2>Books</h2>

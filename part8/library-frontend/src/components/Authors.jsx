@@ -9,10 +9,19 @@ const Authors = ({ authors, token }) => {
   const [birth, setBirth] = useState('');
 
   const [updateBirthYear] = useMutation(EDIT_AUTHOR, {
-    refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
       const messages = error.graphQLErrors.map((e) => e.message).join('\n');
       console.log('ERROR:', messages);
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+        const updatedAuthor = response.data.editAuthor;
+        return {
+          allAuthors: allAuthors.map((author) =>
+            author.id === updatedAuthor.id ? updatedAuthor : author
+          ),
+        };
+      });
     },
   });
 
@@ -76,10 +85,10 @@ const Authors = ({ authors, token }) => {
               </label>
             </div>
             <div>
-              <label htmlFor="yearInput">
+              <label htmlFor="birthInput">
                 Born
                 <input
-                  id="yearInput"
+                  id="birthInput"
                   type="number"
                   value={birth}
                   onChange={({ target }) => setBirth(Number(target.value))}

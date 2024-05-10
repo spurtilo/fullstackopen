@@ -14,7 +14,7 @@ const Books = () => {
     'classic',
   ];
   const [chosenGenre, setChosenGenre] = useState('');
-  const { loading, data } = useQuery(ALL_BOOKS);
+  const { loading, data, refetch } = useQuery(ALL_BOOKS);
 
   if (loading) {
     return <div>loading...</div>;
@@ -30,12 +30,9 @@ const Books = () => {
   }
 
   const filterByGenre = (genre) => {
+    refetch({ genre });
     setChosenGenre(genre);
   };
-
-  const filteredBooks = chosenGenre
-    ? data.allBooks.filter((book) => book.genres.includes(chosenGenre))
-    : data.allBooks;
 
   return (
     <div>
@@ -63,7 +60,7 @@ const Books = () => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {filteredBooks.map((b) => (
+          {data.allBooks.map((b) => (
             <tr key={b.title}>
               <td>{b.title}</td>
               <td>{b.author.name}</td>

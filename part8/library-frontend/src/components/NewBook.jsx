@@ -12,10 +12,23 @@ const NewBook = () => {
   const navigate = useNavigate();
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
     onError: (error) => {
       const messages = error.graphQLErrors.map((e) => e.message).join('\n');
       console.log('ERROR:', messages);
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        const newBook = response.data.addBook;
+        return {
+          allBooks: [...allBooks, newBook],
+        };
+      });
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+        const newAuthor = response.data.addBook.author;
+        return {
+          allAuthors: [...allAuthors, newAuthor],
+        };
+      });
     },
   });
 
@@ -41,32 +54,44 @@ const NewBook = () => {
     <div>
       <form onSubmit={submit}>
         <div>
-          title
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+          <label htmlFor="titleInput">
+            title
+            <input
+              id="titleInput"
+              value={title}
+              onChange={({ target }) => setTitle(target.value)}
+            />
+          </label>
         </div>
         <div>
-          author
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+          <label htmlFor="authorInput">
+            author
+            <input
+              id="authorInput"
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
+            />
+          </label>
         </div>
         <div>
-          published
-          <input
-            type="number"
-            value={published}
-            onChange={({ target }) => setPublished(Number(target.value))}
-          />
+          <label htmlFor="publishInput">
+            published
+            <input
+              id="publishInput"
+              type="number"
+              value={published}
+              onChange={({ target }) => setPublished(Number(target.value))}
+            />
+          </label>
         </div>
         <div>
-          <input
-            value={genre}
-            onChange={({ target }) => setGenre(target.value)}
-          />
+          <label htmlFor="genreInput">
+            <input
+              id="genreInput"
+              value={genre}
+              onChange={({ target }) => setGenre(target.value)}
+            />
+          </label>
           <button onClick={addGenre} type="button">
             add genre
           </button>
