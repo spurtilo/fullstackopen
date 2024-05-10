@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { EDIT_AUTHOR, ALL_AUTHORS } from '../queries';
 
-const Authors = ({ authors }) => {
+const Authors = ({ authors, token }) => {
   const [name, setName] = useState(authors.length > 0 ? authors[0].name : '');
   const [birth, setBirth] = useState('');
 
@@ -55,39 +55,41 @@ const Authors = ({ authors }) => {
           </tbody>
         </table>
       </div>
-      <div>
-        <h2>Set Birthyear</h2>
-        <form onSubmit={submit}>
-          <div>
-            <label htmlFor="authorSelect">
-              Author
-              <select
-                id="authorSelect"
-                value={name}
-                onChange={({ target }) => setName(target.value)}
-              >
-                {authors.map((a) => (
-                  <option key={a.id} value={a.name}>
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label htmlFor="yearInput">
-              Born
-              <input
-                id="yearInput"
-                type="number"
-                value={birth}
-                onChange={({ target }) => setBirth(Number(target.value))}
-              />
-            </label>
-          </div>
-          <button type="submit">Update author</button>
-        </form>
-      </div>
+      {token && (
+        <div>
+          <h2>Set Birthyear</h2>
+          <form onSubmit={submit}>
+            <div>
+              <label htmlFor="authorSelect">
+                Author
+                <select
+                  id="authorSelect"
+                  value={name}
+                  onChange={({ target }) => setName(target.value)}
+                >
+                  {authors.map((a) => (
+                    <option key={a.id} value={a.name}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div>
+              <label htmlFor="yearInput">
+                Born
+                <input
+                  id="yearInput"
+                  type="number"
+                  value={birth}
+                  onChange={({ target }) => setBirth(Number(target.value))}
+                />
+              </label>
+            </div>
+            <button type="submit">Update author</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

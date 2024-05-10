@@ -1,16 +1,26 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/self-closing-comp */
+import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { ALL_BOOKS } from '../queries';
 
 const Books = () => {
-  const result = useQuery(ALL_BOOKS);
+  const genres = [
+    'refactoring',
+    'agile',
+    'patterns',
+    'design',
+    'crime',
+    'classic',
+  ];
+  const [chosenGenre, setChosenGenre] = useState('');
+  const { loading, data } = useQuery(ALL_BOOKS);
 
-  if (result.loading) {
+  if (loading) {
     return <div>loading...</div>;
   }
 
-  if (result.data.allBooks.length === 0) {
+  if (data.allBooks.length === 0) {
     return (
       <div>
         <h2>Books</h2>
@@ -19,10 +29,33 @@ const Books = () => {
     );
   }
 
+  const filterByGenre = (genre) => {
+    setChosenGenre(genre);
+  };
+
+  const filteredBooks = chosenGenre
+    ? data.allBooks.filter((book) => book.genres.includes(chosenGenre))
+    : data.allBooks;
+
   return (
     <div>
       <h2>Books</h2>
-
+      {chosenGenre && <p>in genre {chosenGenre}</p>}
+      <div>
+        {genres.map((genre) => (
+          <button
+            type="button"
+            key={genre}
+            value={genre}
+            onClick={() => filterByGenre(genre)}
+          >
+            {genre}
+          </button>
+        ))}
+        <button type="button" onClick={() => filterByGenre('')}>
+          all genres
+        </button>
+      </div>
       <table>
         <tbody>
           <tr>
@@ -30,11 +63,11 @@ const Books = () => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {result.data.allBooks.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author.name}</td>
-              <td>{a.published}</td>
+          {filteredBooks.map((b) => (
+            <tr key={b.title}>
+              <td>{b.title}</td>
+              <td>{b.author.name}</td>
+              <td>{b.published}</td>
             </tr>
           ))}
         </tbody>

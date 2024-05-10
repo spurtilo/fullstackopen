@@ -204,7 +204,7 @@ const resolvers = {
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username });
 
-      if (!user || args.password !== 'salainensana') {
+      if (!user || args.password !== '123') {
         throw new GraphQLError('Wrong credentials', {
           extensions: {
             code: 'BAD_USER_INPUT',
