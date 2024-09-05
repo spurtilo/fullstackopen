@@ -6,11 +6,10 @@ const schema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    unique: true,
     minlength: 5,
   },
   published: {
-    type: Number,
+    type: String,
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
@@ -18,6 +17,8 @@ const schema = new mongoose.Schema({
   },
   genres: [{ type: String }],
 });
+
+schema.index({ author: 1, title: 1 }, { unique: true });
 
 schema.plugin(uniqueValidator);
 

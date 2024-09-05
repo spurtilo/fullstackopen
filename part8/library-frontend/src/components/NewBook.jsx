@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries';
+import { updateBooksCache, updateAuthorsCache } from '../utils/updateCache';
 
 const NewBook = () => {
   const [title, setTitle] = useState('');
@@ -9,7 +9,6 @@ const NewBook = () => {
   const [published, setPublished] = useState('');
   const [genre, setGenre] = useState('');
   const [genres, setGenres] = useState([]);
-  const navigate = useNavigate();
 
   const [createBook] = useMutation(CREATE_BOOK, {
     onError: (error) => {
@@ -17,27 +16,24 @@ const NewBook = () => {
       console.log('ERROR:', messages);
     },
     update: (cache, response) => {
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        const newBook = response.data.addBook;
-        return {
-          allBooks: [...allBooks, newBook],
-        };
-      });
-      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
-        const newAuthor = response.data.addBook.author;
-        return {
-          allAuthors: [...allAuthors, newAuthor],
-        };
-      });
+      const addedBook = response.data.addBook;
+      const addedAuthor = response.data.addBook.author;
+      updateBooksCache(cache, { query: ALL_BOOKS }, addedBook);
+      updateAuthorsCache(cache, { query: ALL_AUTHORS }, addedAuthor);
+      window.alert(`Added ${addedBook.title} by ${addedAuthor.name}`);
     },
   });
 
   const submit = async (event) => {
     event.preventDefault();
-
-    createBook({ variables: { title, author, published, genres } });
-    navigate('/books', { replace: true });
-
+    createBook({
+      variables: {
+        title,
+        author,
+        published: published.length > 0 ? published : 'N/A',
+        genres,
+      },
+    });
     setTitle('');
     setPublished('');
     setAuthor('');

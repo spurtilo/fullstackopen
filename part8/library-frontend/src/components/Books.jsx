@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/self-closing-comp */
 import { useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { ALL_BOOKS } from '../queries';
+import { useQuery, useApolloClient, useSubscription } from '@apollo/client';
+import { ALL_BOOKS, BOOK_ADDED } from '../queries';
+import { updateBooksCache } from '../utils/updateCache';
 
 const Books = () => {
   const genres = [
@@ -14,13 +15,26 @@ const Books = () => {
     'classic',
   ];
   const [chosenGenre, setChosenGenre] = useState('');
-  const { loading, data, refetch } = useQuery(ALL_BOOKS);
+  const { loading, data: allBooksData, refetch } = useQuery(ALL_BOOKS);
+  const client = useApolloClient();
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded;
+      updateBooksCache(
+        client.cache,
+        { query: ALL_BOOKS, variables: { genre: chosenGenre } },
+        addedBook
+      );
+      window.alert(`Added ${addedBook.title} by ${addedBook.author.name}`);
+    },
+  });
 
   if (loading) {
     return <div>loading...</div>;
   }
 
-  if (data.allBooks.length === 0) {
+  if (allBooksData.allBooks.length === 0) {
     return (
       <div>
         <h2>Books</h2>
@@ -60,8 +74,8 @@ const Books = () => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {data.allBooks.map((b) => (
-            <tr key={b.title}>
+          {allBooksData.allBooks.map((b) => (
+            <tr key={b.id}>
               <td>{b.title}</td>
               <td>{b.author.name}</td>
               <td>{b.published}</td>

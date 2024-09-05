@@ -14,7 +14,7 @@ const schema = new mongoose.Schema({
   },
   bookCount: {
     type: Number,
-    required: true,
+    default: 0,
   },
 });
 
