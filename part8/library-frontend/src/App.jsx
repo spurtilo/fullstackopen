@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { useApolloClient, useQuery, useSubscription } from '@apollo/client';
-import { ALL_AUTHORS, BOOK_ADDED } from './queries';
-import { updateAuthorsCache } from './utils/updateCache';
+import { useApolloClient, useSubscription } from '@apollo/client';
+import { BOOK_ADDED } from './queries';
 
 import Authors from './components/Authors';
 import Books from './components/Books';
@@ -12,16 +11,8 @@ import Recommendations from './components/Recommendations';
 
 const App = () => {
   const [token, setToken] = useState(null);
-  const result = useQuery(ALL_AUTHORS);
   const client = useApolloClient();
   const navigate = useNavigate();
-
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      const addeAuthor = data.data.bookAdded.author;
-      updateAuthorsCache(client.cache, { query: ALL_AUTHORS }, addeAuthor);
-    },
-  });
 
   useEffect(() => {
     const storedToken = localStorage.getItem('library-token');
@@ -30,9 +21,12 @@ const App = () => {
     }
   }, []);
 
-  if (result.loading) {
-    return <div>loading...</div>;
-  }
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded;
+      window.alert(`Added ${addedBook.title} by ${addedBook.author.name}`);
+    },
+  });
 
   const logout = () => {
     setToken(null);
@@ -68,10 +62,7 @@ const App = () => {
       )}
 
       <Routes>
-        <Route
-          path="/"
-          element={<Authors authors={result.data.allAuthors} token={token} />}
-        />
+        <Route path="/" element={<Authors token={token} />} />
         <Route path="/books" element={<Books />} />
         <Route path="/login" element={<LoginForm setToken={setToken} />} />
         <Route path="/add" element={<NewBook />} />

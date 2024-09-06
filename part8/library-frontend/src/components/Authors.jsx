@@ -1,12 +1,32 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/self-closing-comp */
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { EDIT_AUTHOR, ALL_AUTHORS } from '../queries';
+import {
+  useApolloClient,
+  useQuery,
+  useMutation,
+  useSubscription,
+} from '@apollo/client';
+import { EDIT_AUTHOR, ALL_AUTHORS, BOOK_ADDED } from '../queries';
+import { updateAuthorsCache } from '../utils/updateCache';
 
-const Authors = ({ authors, token }) => {
-  const [name, setName] = useState(authors.length > 0 ? authors[0].name : '');
+const Authors = ({ token }) => {
+  const client = useApolloClient();
   const [birth, setBirth] = useState('');
+  const [name, setName] = useState('');
+
+  const { loading, data: authorsData } = useQuery(ALL_AUTHORS);
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded;
+      updateAuthorsCache(
+        client.cache,
+        { query: ALL_AUTHORS },
+        addedBook.author
+      );
+    },
+  });
 
   const [updateBirthYear] = useMutation(EDIT_AUTHOR, {
     onError: (error) => {
@@ -24,6 +44,11 @@ const Authors = ({ authors, token }) => {
       });
     },
   });
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+  const authors = authorsData?.allAuthors || [];
 
   const submit = (event) => {
     event.preventDefault();
@@ -55,7 +80,7 @@ const Authors = ({ authors, token }) => {
               <th>books</th>
             </tr>
             {authors.map((a) => (
-              <tr key={a.name}>
+              <tr key={a.id}>
                 <td>{a.name}</td>
                 <td>{a.born}</td>
                 <td>{a.bookCount}</td>

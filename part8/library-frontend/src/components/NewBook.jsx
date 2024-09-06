@@ -20,7 +20,6 @@ const NewBook = () => {
       const addedAuthor = response.data.addBook.author;
       updateBooksCache(cache, { query: ALL_BOOKS }, addedBook);
       updateAuthorsCache(cache, { query: ALL_AUTHORS }, addedAuthor);
-      window.alert(`Added ${addedBook.title} by ${addedAuthor.name}`);
     },
   });
 
@@ -76,7 +75,7 @@ const NewBook = () => {
               id="publishInput"
               type="number"
               value={published}
-              onChange={({ target }) => setPublished(Number(target.value))}
+              onChange={({ target }) => setPublished(target.value)}
             />
           </label>
         </div>

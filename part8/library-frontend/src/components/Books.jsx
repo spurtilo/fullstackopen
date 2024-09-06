@@ -6,6 +6,8 @@ import { ALL_BOOKS, BOOK_ADDED } from '../queries';
 import { updateBooksCache } from '../utils/updateCache';
 
 const Books = () => {
+  const [chosenGenre, setChosenGenre] = useState('');
+  const client = useApolloClient();
   const genres = [
     'refactoring',
     'agile',
@@ -14,33 +16,18 @@ const Books = () => {
     'crime',
     'classic',
   ];
-  const [chosenGenre, setChosenGenre] = useState('');
-  const { loading, data: allBooksData, refetch } = useQuery(ALL_BOOKS);
-  const client = useApolloClient();
+
+  const { loading, data: booksData, refetch } = useQuery(ALL_BOOKS);
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
       const addedBook = data.data.bookAdded;
-      updateBooksCache(
-        client.cache,
-        { query: ALL_BOOKS, variables: { genre: chosenGenre } },
-        addedBook
-      );
-      window.alert(`Added ${addedBook.title} by ${addedBook.author.name}`);
+      updateBooksCache(client.cache, { query: ALL_BOOKS }, addedBook);
     },
   });
 
   if (loading) {
     return <div>loading...</div>;
-  }
-
-  if (allBooksData.allBooks.length === 0) {
-    return (
-      <div>
-        <h2>Books</h2>
-        No books to display
-      </div>
-    );
   }
 
   const filterByGenre = (genre) => {
@@ -67,22 +54,29 @@ const Books = () => {
           all genres
         </button>
       </div>
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>Author</th>
-            <th>Published</th>
-          </tr>
-          {allBooksData.allBooks.map((b) => (
-            <tr key={b.id}>
-              <td>{b.title}</td>
-              <td>{b.author.name}</td>
-              <td>{b.published}</td>
+
+      {booksData.allBooks.length === 0 ? (
+        <div>
+          <h3>No books to display</h3>
+        </div>
+      ) : (
+        <table>
+          <tbody>
+            <tr>
+              <th></th>
+              <th>Author</th>
+              <th>Published</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            {booksData.allBooks.map((b) => (
+              <tr key={b.id}>
+                <td>{b.title}</td>
+                <td>{b.author.name}</td>
+                <td>{b.published}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

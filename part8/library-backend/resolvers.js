@@ -47,45 +47,39 @@ const resolvers = {
           },
         });
       }
-      let author = await Author.findOne({ name: args.author });
-      if (!author) {
-        author = new Author({
-          name: args.author,
-          born: null,
-          bookCount: 1,
-        });
-      } else {
-        author.bookCount++;
-      }
-      try {
-        await author.save();
-      } catch (error) {
-        if (error.name === 'ValidationError' && error.errors.name) {
-          throw new GraphQLError(
-            'Author name must be at least 4 characters long.',
-            {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-                error: error.message,
-              },
-            }
-          );
-        } else {
-          throw new GraphQLError('An unexpected error occurred.', {
-            extensions: {
-              code: 'INTERNAL_SERVER_ERROR',
-              error: error.message,
-            },
-          });
-        }
-      }
 
-      const book = new Book({ ...args, author });
+      const book = new Book({ ...args });
+
       try {
-        await book.save();
+        const author = await Author.findOneAndUpdate(
+          { name: args.author },
+          { $inc: { bookCount: 1 } },
+          { upsert: true, new: true }
+        );
+
+        book.author = author._id;
+        const savedBook = await book.save();
+
+        const populatedBook = await Book.findById(savedBook._id)
+          .populate('author')
+          .exec();
+
+        pubsub.publish('BOOK_ADDED', { bookAdded: populatedBook });
+
+        return populatedBook;
       } catch (error) {
         if (error.name === 'ValidationError') {
-          console.log(error.errors);
+          if (error.errors.name) {
+            throw new GraphQLError(
+              'Author name must be at least 4 characters long.',
+              {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                  error: error.message,
+                },
+              }
+            );
+          }
 
           if (error.errors.title) {
             const kind = error.errors.title.kind;
@@ -122,10 +116,6 @@ const resolvers = {
           });
         }
       }
-
-      pubsub.publish('BOOK_ADDED', { bookAdded: book });
-
-      return book;
     },
     editAuthor: async (root, args, { currentUser }) => {
       if (!currentUser) {
