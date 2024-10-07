@@ -2,21 +2,14 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import diaryService from './services/diaryService';
-import {
-  DiaryEntry,
-  NewDiaryEntry,
-  NotificationProps,
-  ZodIssue,
-} from './types';
+import { DiaryEntry, NewDiaryEntry, ZodIssue } from './types';
 import Content from './components/Content';
 import EntryForm from './components/EntryForm';
 import Notification from './components/Notification';
 
 function App() {
   const [entries, setEntries] = useState<DiaryEntry[] | []>([]);
-  const [notification, setNotification] = useState<NotificationProps>({
-    messages: [],
-  });
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     const fetchEntries = async () => {
@@ -37,16 +30,16 @@ function App() {
     fetchEntries();
   }, []);
 
-  const handleNotification = (messages: string[]) => {
-    setNotification({ messages });
+  const handleNotification = (message: string) => {
+    setError(message);
     setTimeout(() => {
-      setNotification({ messages: [] });
-    }, 6000);
+      setError(undefined);
+    }, 4000);
   };
 
   const addEntry = async (
     entryObject: NewDiaryEntry
-  ): Promise<DiaryEntry | { error: string }> => {
+  ): Promise<DiaryEntry | void> => {
     try {
       const returnedEntry = await diaryService.createEntry(entryObject);
       const sortedEntries = [...entries, returnedEntry].sort(
@@ -54,25 +47,27 @@ function App() {
       );
       setEntries(sortedEntries);
       return returnedEntry;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data?.error) {
-        const errorArray: ZodIssue[] = error.response.data.error;
-        const errorMessages = errorArray.map(
-          (e) => `ERROR: ${e.path[0]} : ${e.message}`
-        );
-        console.log(errorMessages);
-        handleNotification(errorMessages);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data.error && Array.isArray(e?.response?.data.error)) {
+          const firstError: ZodIssue = e?.response?.data.error[0];
+          const message = `ERROR: ${firstError.message}`;
+          console.error(message);
+          handleNotification(message);
+        } else {
+          handleNotification('Unrecognized axios error');
+        }
       } else {
-        console.error(error);
+        console.error('Unknown error', e);
+        handleNotification('Unknown error');
       }
-      return { error: 'Something went wrong' };
     }
   };
 
   return (
     <div>
       <h1>Flight Diaries</h1>
-      <Notification messages={notification.messages} />
+      <Notification message={error} />
       <EntryForm addEntry={addEntry} />
       <Content entries={entries} />
     </div>

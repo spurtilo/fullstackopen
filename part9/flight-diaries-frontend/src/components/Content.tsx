@@ -1,6 +1,10 @@
 import { DiaryEntry } from '../types';
 
 const Content = ({ entries }: { entries: DiaryEntry[] }) => {
+  if (entries.length === 0) {
+    return <p>No entries available.</p>;
+  }
+
   return (
     <>
       <h3>Diary Entries</h3>

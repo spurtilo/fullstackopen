@@ -2,7 +2,7 @@ import { NewDiaryEntry, Weather, Visibility } from './types';
 import { z } from 'zod';
 
 export const NewEntrySchema = z.object({
-  date: z.string().date(),
+  date: z.string().min(1, 'Date is required').date('Invalid date'),
   weather: z.nativeEnum(Weather),
   visibility: z.nativeEnum(Visibility),
   comment: z.string().optional(),

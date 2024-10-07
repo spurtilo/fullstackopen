@@ -1,21 +1,23 @@
 import { useState } from 'react';
-import { EntryFormProps } from '../types';
+import { DiaryEntry, NewDiaryEntry } from '../types';
+
+interface EntryFormProps {
+  addEntry: (entryObject: NewDiaryEntry) => Promise<DiaryEntry | void>;
+}
 
 const EntryForm = ({ addEntry }: EntryFormProps) => {
   const [date, setDate] = useState<string>('');
-  const [weather, setWeather] = useState<string>('');
-  const [visibility, setVisibility] = useState<string>('');
+  const [weather, setWeather] = useState<string>('sunny');
+  const [visibility, setVisibility] = useState<string>('great');
   const [comment, setComment] = useState<string>('');
 
   const entryCreation = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    const response = await addEntry({ date, weather, visibility, comment });
-    if (!('error' in response)) {
-      setDate('');
-      setWeather('');
-      setVisibility('');
-      setComment('');
-    }
+    await addEntry({ date, weather, visibility, comment });
+    setDate('');
+    setWeather('sunny');
+    setVisibility('great');
+    setComment('');
   };
 
   return (
@@ -28,7 +30,6 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
             <input
               type="date"
               name="date"
-              placeholder="YYYY-MM-DD"
               value={date}
               onChange={(event) => {
                 setDate(event.target.value);
@@ -45,6 +46,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setWeather('sunny');
               }}
+              checked={weather === 'sunny'}
             />
             sunny
             <input
@@ -53,6 +55,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setWeather('rainy');
               }}
+              checked={weather === 'rainy'}
             />
             rainy
             <input
@@ -61,6 +64,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setWeather('cloudy');
               }}
+              checked={weather === 'cloudy'}
             />
             cloudy
             <input
@@ -69,6 +73,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setWeather('stormy');
               }}
+              checked={weather === 'stormy'}
             />
             stormy
             <input
@@ -77,6 +82,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setWeather('windy');
               }}
+              checked={weather === 'windy'}
             />
             windy
           </label>
@@ -90,6 +96,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setVisibility('great');
               }}
+              checked={visibility === 'great'}
             />
             great
             <input
@@ -98,6 +105,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setVisibility('good');
               }}
+              checked={visibility === 'good'}
             />
             good
             <input
@@ -106,6 +114,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setVisibility('ok');
               }}
+              checked={visibility === 'ok'}
             />
             ok
             <input
@@ -114,6 +123,7 @@ const EntryForm = ({ addEntry }: EntryFormProps) => {
               onChange={() => {
                 setVisibility('poor');
               }}
+              checked={visibility === 'poor'}
             />
             poor
           </label>
