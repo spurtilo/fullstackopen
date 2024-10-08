@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,18 +8,16 @@ import MaleIcon from '@mui/icons-material/Male';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 
 import patientService from '../../services/patients';
-import { Diagnosis, Entry, NewEntry, Patient, ZodIssue } from '../../types';
+import { Entry, NewEntry, Patient, ZodIssue } from '../../types';
 
 import EntryDetails from './EntryDetails';
 import AddEntryForm from './AddEntryForm';
 import AddEntryMenu from './AddEntryMenu';
+import { PatientsContext } from '../../contexts/ContextProvider';
 
-interface Props {
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
-  diagnoses: Diagnosis[];
-}
+const PatientInfo = () => {
+  const { setPatients } = useContext(PatientsContext);
 
-const PatientInfo = ({ setPatients, diagnoses }: Props) => {
   const [formVisibility, setFormVisibility] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
@@ -100,7 +98,6 @@ const PatientInfo = ({ setPatients, diagnoses }: Props) => {
               selectedForm={selectedForm}
               onSubmit={submitNewEntry}
               onCancel={closeForm}
-              diagnoses={diagnoses}
             />
           ) : (
             <AddEntryMenu
@@ -119,13 +116,7 @@ const PatientInfo = ({ setPatients, diagnoses }: Props) => {
         <Grid container item direction="column" rowGap={2}>
           {localEntries &&
             localEntries.map((entry) => {
-              return (
-                <EntryDetails
-                  key={entry.id}
-                  entry={entry}
-                  diagnoses={diagnoses}
-                />
-              );
+              return <EntryDetails key={entry.id} entry={entry} />;
             })}
         </Grid>
       </Grid>

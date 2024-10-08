@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   Box,
   Table,
@@ -17,13 +17,11 @@ import { PatientFormValues, Patient, ZodIssue } from '../../types';
 import AddPatientModal from '../AddPatientModal';
 import HealthRatingBar from '../HealthRatingBar';
 import patientService from '../../services/patients';
+import { PatientsContext } from '../../contexts/ContextProvider';
 
-interface Props {
-  patients: Patient[];
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
-}
+const PatientListPage = () => {
+  const { patients, setPatients } = useContext(PatientsContext);
 
-const PatientListPage = ({ patients, setPatients }: Props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 

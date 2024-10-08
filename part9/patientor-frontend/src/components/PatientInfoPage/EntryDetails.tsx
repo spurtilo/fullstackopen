@@ -1,9 +1,13 @@
+import { useContext } from 'react';
+
 import { Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import WorkIcon from '@mui/icons-material/Work';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+
 import { Diagnosis, Entry, HealthCheckRating } from '../../types';
+import { DiagnosesContext } from '../../contexts/ContextProvider';
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -130,13 +134,9 @@ const entryBoxStyle = {
   borderRadius: '5px',
 };
 
-const EntryDetails = ({
-  entry,
-  diagnoses,
-}: {
-  entry: Entry;
-  diagnoses: Diagnosis[];
-}) => {
+const EntryDetails = ({ entry }: { entry: Entry }) => {
+  const { diagnoses } = useContext(DiagnosesContext);
+
   switch (entry.type) {
     case 'HealthCheck':
       return (

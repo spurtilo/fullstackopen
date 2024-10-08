@@ -1,4 +1,4 @@
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useContext, useState } from 'react';
 import { Diagnosis, HealthCheckRating, NewEntry } from '../../types';
 import {
   Button,
@@ -14,12 +14,12 @@ import { Box } from '@mui/system';
 
 import DateInput from '../DateInput';
 import DiagnosisSelect from './DiagnosisSelect';
+import { DiagnosesContext } from '../../contexts/ContextProvider';
 
 interface AddEntryFormProps {
   selectedForm: string;
   onCancel: () => void;
   onSubmit: (values: NewEntry) => void;
-  diagnoses: Diagnosis[];
 }
 
 interface RatingOption {
@@ -117,8 +117,9 @@ const AddEntryForm = ({
   selectedForm,
   onCancel,
   onSubmit,
-  diagnoses,
 }: AddEntryFormProps) => {
+  const { diagnoses } = useContext(DiagnosesContext);
+
   const [description, setDescription] = useState('');
   const [date, setDate] = useState<string>('');
   const [specialist, setSpecialist] = useState('');
@@ -222,7 +223,11 @@ const AddEntryForm = ({
                     onChange={onRatingChange}
                   >
                     {ratingOptions.map((option) => (
-                      <MenuItem key={option.label} value={option.value}>
+                      <MenuItem
+                        id="ratingSelect"
+                        key={option.label}
+                        value={option.value}
+                      >
                         {option.label}
                       </MenuItem>
                     ))}
